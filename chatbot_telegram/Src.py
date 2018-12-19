@@ -8,9 +8,5 @@ class Src() :
 		self.wday = ['월', '화', '수', '목', '금', '토', '일']
 		self.mealTime = ['breakfast', 'lunch', 'dinner']
 		self.mealType = ['한식', '일품', '특식 (전골 / 뚝배기)', '양식', '능수관', '수박여']
-		#self.keybod = {
-		#	'type' : 'buttons',
-		#	'buttons' : self.mealTime + ['���� ���� ��¥ ����', '���� ���� ��¥ ����', '�Ұ�']
-		#}
 
 src = Src()
