@@ -1,7 +1,9 @@
 
 # -*- coding: euc-kr -*-
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
+from telegram.ext import \
+	Updater, CommandHandler, MessageHandler, \
+	CallbackQueryHandler, Filters, InlineQueryHandler
 from Manager import manager
 from Src import src
 
@@ -14,7 +16,7 @@ log = logging.getLogger('run.py')
 
 
 def main() :
-	TOKEN = 'token'
+	TOKEN = src.TOKEN
 	updater = Updater(TOKEN)
 
 	dp = updater.dispatcher
@@ -26,6 +28,8 @@ def main() :
 		dp.add_handler(CommandHandler(cmd, manager.meal))
 
 	dp.add_handler(CallbackQueryHandler(manager.button))
+
+	dp.add_handler(InlineQueryHandler(manager.inlinequery))
 
 	dp.add_error_handler(manager.error)
 

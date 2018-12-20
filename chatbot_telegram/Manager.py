@@ -4,7 +4,10 @@ from Menu import menu
 from TimeManager import tm, MyTime
 from DataManager import dm
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Bot
+from uuid import uuid4
+from telegram import \
+	InlineKeyboardButton, InlineKeyboardMarkup, \
+	Bot, InlineQueryResultArticle, InputTextMessageContent
 
 import time
 import threading
@@ -17,10 +20,9 @@ log = logging.getLogger('Manager.py')
 
 class Manager() :
 	def __init__(self) :
-		TOKEN = 'token'
+		TOKEN = src.TOKEN
 		self.__bot = Bot(TOKEN)
 		remainTimes = tm.remainTimesToMealTime(time.localtime())
-		log.info('__init__ - remainTimes : ' + str(remainTimes))
 		for i in range(3) :
 			self.__t = threading.Timer(remainTimes[i], self.__sendMessage, (i, ))
 			self.__t.start()
@@ -29,12 +31,6 @@ class Manager() :
 								InlineKeyboardButton('Off', callback_data = 'Off')]])
 	def __del__(self) :
 		self.__t.cancel()
-
-	def meal(self, bot, update) :
-		if tm.update() :
-			menu.update()
-		mealTime = update.message.text[1:]
-		update.message.reply_text(menu.getMeal(mealTime, tm.mainTime))
 
 	def start(self, bot, update) :
 		update.message.reply_text(src.intro)
@@ -47,6 +43,23 @@ class Manager() :
 									'사용하시려면 아침, 점심, 저녁, 주말에 대해 수신 여부를 설정해주십시오.\n\n')
 		update.message.reply_text(self.__onOffText(dm.getUserAlarm(user_id), 0),
 									reply_markup = self.__onOffKeyboard)
+
+	def meal(self, bot, update) :
+		if tm.update() :
+			menu.update()
+		mealTime = update.message.text[1:]
+		update.message.reply_text(menu.getMeal(mealTime, tm.mainTime))
+
+	def inlinequery(self, bot, update) :
+		results = []
+		for mealTimeIdx in range(3) :
+			qResult = InlineQueryResultArticle(
+				id = uuid4(),
+				title = src.mealTime[mealTimeIdx],
+				input_message_content = InputTextMessageContent(menu.getMeal(src.mealTime[mealTimeIdx], tm.mainTime)))
+			results.append(qResult)
+		update.inline_query.answer(results)
+
 	def button(self, bot, update) :
 		q = update.callback_query
 		text = q.message.text
@@ -86,7 +99,8 @@ class Manager() :
 
 		userList = dm.getUserList(mealTimeIdx, myTime.st)
 		for user_id in userList :
-			self.__bot.send_message(user_id, meal)
+			self.__t = threading.Thread(target = self.__bot.send_message, args = (user_id, meal))
+			self.__t.start()
 
 		myTime = MyTime(myTime.sec + 30)
 		remainTime = tm.remainTimesToMealTime(myTime.st)[mealTimeIdx]
