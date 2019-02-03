@@ -23,6 +23,7 @@ class Manager() :
 		TOKEN = src.TOKEN
 		self.__bot = Bot(TOKEN)
 		remainTimes = tm.remainTimesToMealTime(time.localtime())
+		#log.info('__init__ - remainTimes : ' + str(remainTimes))
 		for i in range(3) :
 			self.__t = threading.Timer(remainTimes[i], self.__sendMessage, (i, ))
 			self.__t.start()
@@ -51,6 +52,9 @@ class Manager() :
 		update.message.reply_text(menu.getMeal(mealTime, tm.mainTime))
 
 	def inlinequery(self, bot, update) :
+		if tm.update() :
+			menu.update()
+
 		results = []
 		for mealTimeIdx in range(3) :
 			qResult = InlineQueryResultArticle(
@@ -94,16 +98,18 @@ class Manager() :
 		if tm.update() :
 			menu.update()
 
-		myTime = tm.mainTime
-		meal = menu.getMeal(src.mealTime[mealTimeIdx], myTime)
+		meal = menu.getMeal(src.mealTime[mealTimeIdx], tm.mainTime)
 
-		userList = dm.getUserList(mealTimeIdx, myTime.st)
+		userList = dm.getUserList(mealTimeIdx, tm.mainTime.st)
 		for user_id in userList :
 			self.__t = threading.Thread(target = self.__bot.send_message, args = (user_id, meal))
 			self.__t.start()
 
-		myTime = MyTime(myTime.sec + 30)
+		myTime = MyTime(MyTime(time.localtime()).sec + 30)
 		remainTime = tm.remainTimesToMealTime(myTime.st)[mealTimeIdx]
+		#log.info('__sendMessage - myTime : ' + str(myTime))
+		#log.info('__sendMessage - mealTimeIdx : ' + str(mealTimeIdx))
+		#log.info('__sendMessgae - remainTime : ' + str(remainTime))
 		self.__t = threading.Timer(remainTime, self.__sendMessage, (mealTimeIdx, ))
 		self.__t.start()
 		

@@ -18,7 +18,7 @@ class TimeManager() :
 	def update(self) :
 		ltime = time.localtime()
 		# local time = local time + 5 hour 30 min ( == 19800 sec)
-		# because 18h 30m : dinner time over
+		# because 18h 30m == dinner time over
 		# (today's dinner time over -> have to update time to next day)
 		ltime = time.localtime(int(time.mktime(ltime)) + 19800)
 
@@ -53,13 +53,11 @@ class TimeManager() :
 			if lst[3:6] < mealTime[i + isWeekend * 3] :
 				dest = copy.deepcopy(lst)
 				dest[3:6] = mealTime[i + isWeekend * 3]
-				dest = time.struct_time(dest)
-				ret.append(int(time.mktime(dest) - time.mktime(lt)))
 			else :
 				dest = list(time.localtime(time.mktime(lt) + 86400))
 				dest[3:6] = mealTime[i + self.isWknd(time.struct_time(dest)) * 3]
-				dest = time.struct_time(dest)
-				ret.append(int(time.mktime(dest) - time.mktime(lt)))
+			dest = time.struct_time(dest)
+			ret.append(int(time.mktime(dest) - time.mktime(lt)))
 		return ret
 	
 	def isWknd(self, structTime) :
