@@ -1,7 +1,7 @@
 
 class Src() :
 	def __init__(self) :
-		self.TOKEN = '604083482:AAFD9d760FRSpoXBDVPFBgEU74KqH0RvS1U'
+		self.TOKEN = 'token'
 		self.intro = '[소개]\n' + 'Koreatech 학식 메뉴를 알려주는 봇 입니다!\n' + \
 			'- \'/\' 버튼을 누른 뒤 아침, 점심, 저녁 버튼을 누르면 해당하는 메뉴를 알려줍니다.\n' + \
 			'- 다른 채팅 방에서 @KoreatechBot 을 입력하고, 식사 시간 버튼을 누르면 해당 채팅방에 메뉴를 보낼 수 있습니다.\n' + \
